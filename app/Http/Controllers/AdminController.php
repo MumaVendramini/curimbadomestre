@@ -45,14 +45,17 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
             'firebase_uid' => 'required|string|unique:users',
+            'role' => 'required|in:admin,student',
+            'password' => 'required|string|min:6',
         ]);
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'firebase_uid' => $request->firebase_uid,
-            'role' => 'student',
-            'is_active' => true,
+            'role' => $request->role,
+            'password' => bcrypt($request->password),
+            'is_active' => $request->has('is_active'),
         ]);
 
         return redirect()->route('admin.users')->with('success', 'Usuário criado com sucesso!');
