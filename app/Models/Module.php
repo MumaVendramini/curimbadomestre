@@ -9,9 +9,15 @@ class Module extends Model
     protected $fillable = [
         'name',
         'description',
+        'toque_type',
+        'toque_origin',
+        'toque_characteristics',
+        'toque_application',
         'order',
         'is_active',
         'apostila_url',
+        'audio_url',
+        'image_url',
     ];
 
     protected $casts = [

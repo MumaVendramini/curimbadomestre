@@ -107,8 +107,14 @@ class AdminController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
+            'toque_type' => 'nullable|in:ijexa,nago,samba_angola,congo,barravento',
+            'toque_origin' => 'nullable|string',
+            'toque_characteristics' => 'nullable|string',
+            'toque_application' => 'nullable|string',
             'order' => 'required|integer|min:1',
             'apostila_url' => 'nullable|url',
+            'audio_url' => 'nullable|url',
+            'image_url' => 'nullable|url',
         ]);
 
         Module::create($request->all());
