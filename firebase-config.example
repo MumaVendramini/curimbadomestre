@@ -1,6 +1,7 @@
 # Firebase Configuration
-# Copie este arquivo para .env e preencha com suas credenciais
+# Copie estas configurações para o arquivo .env e preencha com suas credenciais
 
+FIREBASE_TYPE=service_account
 FIREBASE_PROJECT_ID=curimbadomestre
 FIREBASE_PRIVATE_KEY_ID=your_private_key_id
 FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour private key here\n-----END PRIVATE KEY-----\n"
@@ -10,4 +11,9 @@ FIREBASE_AUTH_URI=https://accounts.google.com/o/oauth2/auth
 FIREBASE_TOKEN_URI=https://oauth2.googleapis.com/token
 FIREBASE_AUTH_PROVIDER_X509_CERT_URL=https://www.googleapis.com/oauth2/v1/certs
 FIREBASE_CLIENT_X509_CERT_URL=https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-xxxxx%40curimbadomestre.iam.gserviceaccount.com
+FIREBASE_DATABASE_URL=
+FIREBASE_STORAGE_BUCKET=curimbadomestre.firebasestorage.app
+FIREBASE_MESSAGING_SENDER_ID=819717678120
+FIREBASE_APP_ID=1:819717678120:web:f39c49f368bcc52f96411d
+FIREBASE_MEASUREMENT_ID=G-JQRTQZ6MQL
 

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FirebaseAuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StudentController;
 
@@ -20,6 +21,9 @@ use App\Http\Controllers\StudentController;
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+/* // Login via Firebase (sessão web)
+Route::post('/firebase/login', [FirebaseAuthController::class, 'login'])->name('firebase.login'); */
 
 // Rota raiz - redireciona para login se não autenticado
 Route::get('/', function () {
