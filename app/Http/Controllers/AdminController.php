@@ -36,7 +36,8 @@ class AdminController extends Controller
 
     public function createUser()
     {
-        return view('admin.users.create');
+        $modules = Module::where('is_active', true)->orderBy('order')->get();
+        return view('admin.users.create', compact('modules'));
     }
 
     public function storeUser(Request $request)
@@ -47,9 +48,11 @@ class AdminController extends Controller
             'firebase_uid' => 'required|string|unique:users',
             'role' => 'required|in:admin,student',
             'password' => 'required|string|min:6',
+            'modules' => 'nullable|array',
+            'modules.*' => 'exists:modules,id',
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'firebase_uid' => $request->firebase_uid,
@@ -57,6 +60,11 @@ class AdminController extends Controller
             'password' => bcrypt($request->password),
             'is_active' => $request->has('is_active'),
         ]);
+
+        // Salvar módulos habilitados para o usuário
+        if ($request->has('modules') && is_array($request->modules)) {
+            $user->enabledModules()->sync($request->modules);
+        }
 
         return redirect()->route('admin.users')->with('success', 'Usuário criado com sucesso!');
     }

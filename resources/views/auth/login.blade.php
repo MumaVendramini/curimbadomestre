@@ -57,6 +57,25 @@
                 </div>
             </form>
 
+            <div class="mt-6">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-white text-gray-500">Ou continue com</span>
+                    </div>
+                </div>
+
+                <div class="mt-6 grid grid-cols-1 gap-3">
+                    <button type="button" onclick="FirebaseAuth.signInWithGoogle()" 
+                            class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <i class="fab fa-google text-red-600 mr-2"></i>
+                        Google
+                    </button>
+                </div>
+            </div>
+
             <div class="mt-6 text-center">
                 <p class="text-sm text-gray-600">
                     Para fins de demonstração, use:
@@ -69,6 +88,13 @@
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    {{-- <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script> --}}
+    
+    <!-- Firebase Auth Script -->
+    {{-- <script src="{{ asset('js/firebase-auth.js') }}"></script> --}}
+    
     <script src="{{ asset('js/app.js') }}"></script>
 </body>
 </html>

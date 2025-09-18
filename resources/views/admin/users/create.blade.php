@@ -109,6 +109,37 @@
                 </label>
             </div>
 
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Módulos Liberados para o Usuário
+                </label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-64 overflow-y-auto border border-gray-300 rounded-md p-4">
+                    @forelse($modules as $module)
+                        <div class="flex items-center">
+                            <input type="checkbox" 
+                                   name="modules[]" 
+                                   id="module_{{ $module->id }}" 
+                                   value="{{ $module->id }}"
+                                   {{ in_array($module->id, old('modules', [])) ? 'checked' : '' }}
+                                   class="form-checkbox h-4 w-4 text-blue-600">
+                            <label for="module_{{ $module->id }}" class="ml-2 block text-sm text-gray-900">
+                                <span class="font-medium">{{ $module->name }}</span>
+                                @if($module->toque_type)
+                                    <span class="text-gray-500 text-xs block">Toque: {{ ucfirst(str_replace('_', ' ', $module->toque_type)) }}</span>
+                                @endif
+                            </label>
+                        </div>
+                    @empty
+                        <div class="text-gray-500 text-sm col-span-2">
+                            Nenhum módulo disponível. Crie módulos primeiro.
+                        </div>
+                    @endforelse
+                </div>
+                <p class="mt-1 text-sm text-gray-600">
+                    Selecione os módulos que este usuário poderá acessar. Deixe desmarcado para não liberar nenhum módulo.
+                </p>
+            </div>
+
             <div class="flex justify-end space-x-4">
                 <a href="{{ route('admin.users') }}" class="btn btn-secondary">
                     Cancelar
