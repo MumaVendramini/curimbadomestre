@@ -45,14 +45,17 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
             'firebase_uid' => 'required|string|unique:users',
+            'role' => 'required|in:admin,student',
+            'password' => 'required|string|min:6',
         ]);
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'firebase_uid' => $request->firebase_uid,
-            'role' => 'student',
-            'is_active' => true,
+            'role' => $request->role,
+            'password' => bcrypt($request->password),
+            'is_active' => $request->has('is_active'),
         ]);
 
         return redirect()->route('admin.users')->with('success', 'Usuário criado com sucesso!');
@@ -104,8 +107,14 @@ class AdminController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
+            'toque_type' => 'nullable|in:ijexa,nago,samba_angola,congo,barravento',
+            'toque_origin' => 'nullable|string',
+            'toque_characteristics' => 'nullable|string',
+            'toque_application' => 'nullable|string',
             'order' => 'required|integer|min:1',
             'apostila_url' => 'nullable|url',
+            'audio_url' => 'nullable|url',
+            'image_url' => 'nullable|url',
         ]);
 
         Module::create($request->all());
