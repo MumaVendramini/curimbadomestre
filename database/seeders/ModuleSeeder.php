@@ -11,33 +11,60 @@ class ModuleSeeder extends Seeder
 {
     public function run()
     {
-        // Criar módulo de exemplo
-        $module = Module::create([
-            'name' => 'Módulo 1: Introdução ao Curimba',
-            'description' => 'Primeiros passos no aprendizado do Curimba, conceitos básicos e fundamentos.',
-            'order' => 1,
-            'is_active' => true,
-            'apostila_url' => 'https://storage.googleapis.com/curimba-apostilas/modulo1.pdf',
-        ]);
+    // Remover antigo módulo de exemplo, se existir
+    Module::where('name', 'Módulo 1: Introdução ao Curimba')->delete();
 
-        // Criar pontos de exemplo
-        Ponto::create([
-            'title' => 'Ponto de Abertura',
-            'lyrics_preview' => 'Salve a força, salve a luz...',
-            'audio_url' => 'https://storage.googleapis.com/curimba-audios/ponto-abertura.mp3',
-            'toque_image_url' => 'https://storage.googleapis.com/curimba-imagens/toque-abertura.jpg',
-            'order' => 1,
-            'module_id' => $module->id,
-        ]);
+    // Garantir que os 5 módulos do curso existam (idempotente)
+        $modules = [
+            [
+                'name' => 'Ijexá',
+                'description' => 'Toque Ijexá: fundamentos e prática.',
+                'toque_type' => 'ijexa',
+                'order' => 1,
+                'apostila_url' => null,
+            ],
+            [
+                'name' => 'Nagô',
+                'description' => 'Toque Nagô: história e técnicas.',
+                'toque_type' => 'nago',
+                'order' => 2,
+                'apostila_url' => null,
+            ],
+            [
+                'name' => 'Samba',
+                'description' => 'Samba de roda / Samba Angola: ritmos e variações.',
+                'toque_type' => 'samba_angola',
+                'order' => 3,
+                'apostila_url' => null,
+            ],
+            [
+                'name' => 'Congo',
+                'description' => 'Toque Congo: estruturas e toques característicos.',
+                'toque_type' => 'congo',
+                'order' => 4,
+                'apostila_url' => null,
+            ],
+            [
+                'name' => 'Barravento',
+                'description' => 'Barravento: estudo dos toques tradicionais.',
+                'toque_type' => 'barravento',
+                'order' => 5,
+                'apostila_url' => null,
+            ],
+        ];
 
-        // Criar vídeos de exemplo
-        Video::create([
-            'title' => 'Introdução ao Curimba',
-            'description' => 'Vídeo explicativo sobre os fundamentos do Curimba',
-            'youtube_id' => 'dQw4w9WgXcQ',
-            'order' => 1,
-            'module_id' => $module->id,
-        ]);
+        foreach ($modules as $m) {
+            Module::updateOrCreate(
+                ['name' => $m['name']],
+                [
+                    'description' => $m['description'],
+                    'toque_type' => $m['toque_type'],
+                    'order' => $m['order'],
+                    'is_active' => true,
+                    'apostila_url' => $m['apostila_url'],
+                ]
+            );
+        }
     }
 }
 

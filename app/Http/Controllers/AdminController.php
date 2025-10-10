@@ -45,7 +45,8 @@ class AdminController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
-            'firebase_uid' => 'required|string|unique:users',
+            // firebase_uid is optional now: nullable and unique when present
+            'firebase_uid' => 'nullable|string|unique:users',
             'role' => 'required|in:admin,student',
             'password' => 'required|string|min:6',
             'modules' => 'nullable|array',
@@ -55,7 +56,7 @@ class AdminController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'firebase_uid' => $request->firebase_uid,
+            'firebase_uid' => $request->firebase_uid ?: null,
             'role' => $request->role,
             'password' => bcrypt($request->password),
             'is_active' => $request->has('is_active'),

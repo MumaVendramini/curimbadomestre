@@ -1,20 +1,21 @@
 @extends('layouts.app')
 
-@section('title', 'Adicionar Usuário')
+@section('title', 'Editar Usuário')
 
 @section('content')
 <div class="space-y-6">
     <div class="flex justify-between items-center">
-        <h1 class="text-3xl font-bold text-gray-900">Adicionar Novo Usuário</h1>
+        <h1 class="text-3xl font-bold text-gray-900">Editar Usuário</h1>
         <a href="{{ route('admin.users') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left mr-2"></i>Voltar
         </a>
     </div>
 
     <div class="card">
-        <form method="POST" action="{{ route('admin.users.store') }}" class="space-y-6">
+        <form method="POST" action="{{ route('admin.users.update', $user) }}" class="space-y-6">
             @csrf
-            
+            @method('PUT')
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
@@ -23,7 +24,7 @@
                     <input type="text" 
                            name="name" 
                            id="name" 
-                           value="{{ old('name') }}"
+                           value="{{ old('name', $user->name) }}"
                            class="form-input w-full @error('name') border-red-500 @enderror"
                            placeholder="Digite o nome completo"
                            required>
@@ -39,7 +40,7 @@
                     <input type="email" 
                            name="email" 
                            id="email" 
-                           value="{{ old('email') }}"
+                           value="{{ old('email', $user->email) }}"
                            class="form-input w-full @error('email') border-red-500 @enderror"
                            placeholder="usuario@exemplo.com"
                            required>
@@ -55,7 +56,7 @@
                     <input type="text" 
                            name="firebase_uid" 
                            id="firebase_uid" 
-                           value="{{ old('firebase_uid') }}"
+                           value="{{ old('firebase_uid', $user->firebase_uid) }}"
                            class="form-input w-full @error('firebase_uid') border-red-500 @enderror"
                            placeholder="Opcional: associe um usuário Firebase se usar autenticação via Firebase">
                     @error('firebase_uid')
@@ -73,8 +74,8 @@
                             class="form-select w-full @error('role') border-red-500 @enderror"
                             required>
                         <option value="">Selecione o tipo</option>
-                        <option value="student" {{ old('role') == 'student' ? 'selected' : '' }}>Aluno</option>
-                        <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Administrador</option>
+                        <option value="student" {{ old('role', $user->role) == 'student' ? 'selected' : '' }}>Aluno</option>
+                        <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Administrador</option>
                     </select>
                     @error('role')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -83,14 +84,13 @@
 
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-                        Senha *
+                        Senha
                     </label>
                     <input type="password" 
                            name="password" 
                            id="password" 
                            class="form-input w-full @error('password') border-red-500 @enderror"
-                           placeholder="Mínimo 6 caracteres"
-                           required>
+                           placeholder="Deixe em branco para não alterar">
                     @error('password')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -102,7 +102,7 @@
                        name="is_active" 
                        id="is_active" 
                        value="1"
-                       {{ old('is_active', true) ? 'checked' : '' }}
+                       {{ old('is_active', $user->is_active) ? 'checked' : '' }}
                        class="form-checkbox h-4 w-4 text-blue-600">
                 <label for="is_active" class="ml-2 block text-sm text-gray-900">
                     Usuário ativo
@@ -120,7 +120,7 @@
                                    name="modules[]" 
                                    id="module_{{ $module->id }}" 
                                    value="{{ $module->id }}"
-                                   {{ in_array($module->id, old('modules', [])) ? 'checked' : '' }}
+                                   {{ in_array($module->id, old('modules', $user->enabledModules->pluck('id')->toArray())) ? 'checked' : '' }}
                                    class="form-checkbox h-4 w-4 text-blue-600">
                             <label for="module_{{ $module->id }}" class="ml-2 block text-sm text-gray-900">
                                 <span class="font-medium">{{ $module->name }}</span>
@@ -145,7 +145,7 @@
                     Cancelar
                 </a>
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save mr-2"></i>Salvar Usuário
+                    <i class="fas fa-save mr-2"></i>Salvar Alterações
                 </button>
             </div>
         </form>
