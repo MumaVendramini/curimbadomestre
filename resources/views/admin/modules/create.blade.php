@@ -6,7 +6,7 @@
 <div class="space-y-6">
 	<div class="flex justify-between items-center">
 		<h1 class="text-3xl font-bold text-gray-900">Adicionar Novo Módulo</h1>
-		<a href="{{ route('admin.modules') }}" class="btn btn-secondary">
+		<a href="{{ route('admin.modules.index') }}" class="btn btn-secondary">
 			<i class="fas fa-arrow-left mr-2"></i>Voltar
 		</a>
 	</div>
@@ -110,7 +110,7 @@
 			</div>
 
 			<div class="flex justify-end space-x-4">
-				<a href="{{ route('admin.modules') }}" class="btn btn-secondary">Cancelar</a>
+				<a href="{{ route('admin.modules.index') }}" class="btn btn-secondary">Cancelar</a>
 				<button type="submit" class="btn btn-primary">
 					<i class="fas fa-save mr-2"></i>Salvar Módulo
 				</button>

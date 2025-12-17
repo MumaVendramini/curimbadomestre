@@ -6,7 +6,11 @@ use App\Models\User;
 use App\Models\Module;
 use App\Models\Ponto;
 use App\Models\Video;
+use App\Models\ModuleAudio;
+use App\Models\ModuleVideo;
+use App\Models\ModuleImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -128,32 +132,164 @@ class AdminController extends Controller
 
         Module::create($request->all());
 
-        return redirect()->route('admin.modules')->with('success', 'Módulo criado com sucesso!');
+        return redirect()->route('admin.modules.index')->with('success', 'Módulo criado com sucesso!');
     }
 
     public function editModule(Module $module)
     {
+        $module->load(['audios', 'moduleVideos', 'images']);
         return view('admin.modules.edit', compact('module'));
     }
 
     public function updateModule(Request $request, Module $module)
     {
+        \Log::info('Iniciando update do módulo', [
+            'module_id' => $module->id,
+            'request_data' => $request->all()
+        ]);
+        
+        // Validação mais simples para teste
         $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'required|string',
+            'toque_type' => 'required|in:ijexa,nago,samba_angola,congo,barravento',
             'order' => 'required|integer|min:1',
-            'apostila_url' => 'nullable|url',
         ]);
 
-        $module->update($request->all());
+        \Log::info('Validação passou, atualizando módulo');
 
-        return redirect()->route('admin.modules')->with('success', 'Módulo atualizado com sucesso!');
+        $module->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'toque_type' => $request->toque_type,
+            'toque_origin' => $request->toque_origin,
+            'toque_characteristics' => $request->toque_characteristics,
+            'toque_application' => $request->toque_application,
+            'order' => $request->order,
+            'is_active' => $request->has('is_active'),
+            'apostila_url' => $request->apostila_url,
+        ]);
+
+        // Processar novos áudios
+        if ($request->has('audio_names') && is_array($request->audio_names)) {
+            foreach ($request->audio_names as $index => $audioName) {
+                if (!empty($audioName)) {
+                    $audioFile = $request->file('audio_files.' . $index);
+                    $filePath = null;
+                    
+                    if ($audioFile) {
+                        $filePath = $audioFile->store('audios', 'public');
+                    }
+                    
+                    ModuleAudio::create([
+                        'module_id' => $module->id,
+                        'title' => $audioName,
+                        'file_path' => $filePath,
+                    ]);
+                }
+            }
+        }
+
+        // Processar novos vídeos (YouTube URLs)
+        if ($request->has('video_titles') && is_array($request->video_titles)) {
+            foreach ($request->video_titles as $index => $videoTitle) {
+                $videoUrl = $request->input('video_urls.' . $index);
+                
+                if (!empty($videoTitle) && !empty($videoUrl)) {
+                    ModuleVideo::create([
+                        'module_id' => $module->id,
+                        'title' => $videoTitle,
+                        'url' => $videoUrl,
+                    ]);
+                }
+            }
+        }
+
+        // Processar novas imagens
+        if ($request->has('image_titles') && is_array($request->image_titles)) {
+            foreach ($request->image_titles as $index => $imageTitle) {
+                if (!empty($imageTitle)) {
+                    $imageFile = $request->file('image_files.' . $index);
+                    $filePath = null;
+                    
+                    if ($imageFile) {
+                        $filePath = $imageFile->store('images', 'public');
+                    }
+                    
+                    ModuleImage::create([
+                        'module_id' => $module->id,
+                        'title' => $imageTitle,
+                        'file_path' => $filePath,
+                    ]);
+                }
+            }
+        }
+
+        \Log::info('Módulo atualizado com sucesso');
+
+        return redirect()->route('admin.modules.edit', $module)->with('success', 'Módulo atualizado com sucesso!');
     }
 
     public function deleteModule(Module $module)
     {
         $module->delete();
-        return redirect()->route('admin.modules')->with('success', 'Módulo removido com sucesso!');
+        return redirect()->route('admin.modules.index')->with('success', 'Módulo removido com sucesso!');
+    }
+
+    public function deleteModuleAudio(Request $request, Module $module)
+    {
+        try {
+            $audioId = $request->route('audioId');
+            
+            $moduleAudio = ModuleAudio::where('id', $audioId)->where('module_id', $module->id)->first();
+            
+            if (!$moduleAudio) {
+                abort(404, 'Áudio não encontrado');
+            }
+            
+            if ($moduleAudio->file_path) {
+                Storage::disk('public')->delete($moduleAudio->file_path);
+            }
+            
+            $moduleAudio->delete();
+            return redirect()->back()->with('success', 'Áudio removido com sucesso!');
+            
+        } catch (\Exception $e) {
+            \Log::error('Erro ao deletar áudio', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return redirect()->back()->with('error', 'Erro ao remover áudio: ' . $e->getMessage());
+        }
+    }
+
+    public function deleteModuleVideo(Request $request, Module $module)
+    {
+        $videoId = $request->route('videoId');
+        $moduleVideo = ModuleVideo::where('id', $videoId)->where('module_id', $module->id)->first();
+        
+        if (!$moduleVideo) {
+            abort(404, 'Vídeo não encontrado');
+        }
+        
+        $moduleVideo->delete();
+        return redirect()->back()->with('success', 'Vídeo removido com sucesso!');
+    }
+
+    public function deleteModuleImage(Request $request, Module $module)
+    {
+        $imageId = $request->route('imageId');
+        $moduleImage = ModuleImage::where('id', $imageId)->where('module_id', $module->id)->first();
+        
+        if (!$moduleImage) {
+            abort(404, 'Imagem não encontrada');
+        }
+        
+        if ($moduleImage->file_path) {
+            Storage::disk('public')->delete($moduleImage->file_path);
+        }
+        
+        $moduleImage->delete();
+        return redirect()->back()->with('success', 'Imagem removida com sucesso!');
     }
 }
 

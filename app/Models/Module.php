@@ -39,5 +39,20 @@ class Module extends Model
     {
         return $this->belongsToMany(User::class, 'user_modules', 'module_id', 'user_id');
     }
+
+    public function audios()
+    {
+        return $this->hasMany(ModuleAudio::class);
+    }
+
+    public function moduleVideos()
+    {
+        return $this->hasMany(ModuleVideo::class);
+    }
+
+    public function images()
+    {
+        return $this->hasMany(ModuleImage::class);
+    }
 }
 

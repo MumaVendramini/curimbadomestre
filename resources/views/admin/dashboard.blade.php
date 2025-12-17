@@ -10,7 +10,7 @@
             <a href="{{ route('admin.users') }}" class="btn btn-primary">
                 <i class="fas fa-users mr-2"></i>Gerenciar Usuários
             </a>
-            <a href="{{ route('admin.modules') }}" class="btn btn-secondary">
+            <a href="{{ route('admin.modules.index') }}" class="btn btn-secondary">
                 <i class="fas fa-book mr-2"></i>Gerenciar Módulos
             </a>
         </div>

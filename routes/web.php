@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\FirebaseAuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StudentController;
 
@@ -21,9 +20,6 @@ use App\Http\Controllers\StudentController;
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-/* // Login via Firebase (sessão web)
-Route::post('/firebase/login', [FirebaseAuthController::class, 'login'])->name('firebase.login'); */
 
 // Rota raiz - redireciona para login se não autenticado
 Route::get('/', function () {
@@ -50,10 +46,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('users.delete');
     
     // Gerenciamento de módulos
-    Route::get('/modules', [AdminController::class, 'modules'])->name('modules');
+    Route::get('/modules', [AdminController::class, 'modules'])->name('modules.index');
     Route::get('/modules/create', [AdminController::class, 'createModule'])->name('modules.create');
     Route::post('/modules', [AdminController::class, 'storeModule'])->name('modules.store');
     Route::get('/modules/{module}/edit', [AdminController::class, 'editModule'])->name('modules.edit');
+    
+    // Mídias do módulo (rotas específicas primeiro)
+    Route::get('/modules/{module}/audios/{audioId}/delete', [AdminController::class, 'deleteModuleAudio'])->name('modules.audio.delete');
+    Route::get('/modules/{module}/videos/{videoId}/delete', [AdminController::class, 'deleteModuleVideo'])->name('modules.video.delete');
+    Route::get('/modules/{module}/images/{imageId}/delete', [AdminController::class, 'deleteModuleImage'])->name('modules.image.delete');
+    
+    // Rotas genéricas do módulo (por último)
     Route::put('/modules/{module}', [AdminController::class, 'updateModule'])->name('modules.update');
     Route::delete('/modules/{module}', [AdminController::class, 'deleteModule'])->name('modules.delete');
 });
